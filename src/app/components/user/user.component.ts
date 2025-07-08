@@ -1,21 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter} from '@angular/core';
 import { User } from '../../models/user';
 import Swal from 'sweetalert2';
+import { Router, RouterModule } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { SharingDataService } from '../../services/sharing-data.service';
 
 @Component({
   selector: 'user',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './user.component.html'
 })
 export class UserComponent {
 
- @Input() users: User[] = [];
+  users: User[] = [];
+  title: string = 'Listado de Usuarios';
 
-  
+  constructor(private router: Router,
+    private service: UserService,
+    private sharingData: SharingDataService
+  ) {
+    if(this.router.getCurrentNavigation()?.extras.state){
 
-
- @Output() idUserEventemitter = new EventEmitter();
- @Output() selectdUserEventEmitter = new EventEmitter();
+      this.users = this.router.getCurrentNavigation()?.extras.state!['users']
+    } else {
+      this.service.findAll().subscribe(users => this.users = users); 
+    }
+  }
 
  onRemoveUser(id: number):  void {
 
@@ -29,7 +39,7 @@ export class UserComponent {
         confirmButtonText: 'Si, Eliminalo!',
       }).then((result) => {
         if (result.isConfirmed) {
-            this.idUserEventemitter.emit(id);
+            this.sharingData.idUserEventEmitter.emit(id);
             Swal.fire({
             title: 'Eliminado!',
             text: 'Your file has been deleted.',
@@ -45,7 +55,8 @@ export class UserComponent {
  }
 
  onSlectedUser(user: User): void{
-  this.selectdUserEventEmitter.emit(user);
+  // this.sharingData.selectdUserEventEmitter.emit(user);
+  this.router.navigate(['/users/edit',user.id], {state: {user}});
  }
 
 }

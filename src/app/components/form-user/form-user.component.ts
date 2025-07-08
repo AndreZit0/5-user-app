@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter} from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { User } from '../../models/user';
 import Swal from 'sweetalert2';
+import { SharingDataService } from '../../services/sharing-data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'form-user',
@@ -10,19 +12,23 @@ import Swal from 'sweetalert2';
   templateUrl: './form-user.component.html',
 })
 export class FormUserComponent {
-  @Input() user!: User;
+  
+  user!: User;
 
-  @Output() openEventEmitter: EventEmitter<User> = new EventEmitter();
-
-  @Output() newUserEventEmitter: EventEmitter<User> = new EventEmitter();
-
-  constructor() {
-    this.user = new User();
+  constructor(private sharingData: SharingDataService,
+    private router: Router
+  ) {
+    if(this.router.getCurrentNavigation()?.extras.state){
+      
+      this.user = this.router.getCurrentNavigation()?.extras.state!['user']
+    } else {
+      this.user = new User();
+    }
   }
 
   onSubmit(userForm: NgForm): void {
     if (userForm.valid) {
-      this.newUserEventEmitter.emit(this.user);
+      this.sharingData.newUserEventEmitter.emit(this.user);
       Swal.fire({
         title: 'Agregado Exitosamente!',
         icon: 'success',
@@ -40,9 +46,5 @@ export class FormUserComponent {
     this.user = new User();
     userForm.reset();
     userForm.resetForm();
-  }
-
-  onOpen() {
-    this.openEventEmitter.emit();
   }
 }
