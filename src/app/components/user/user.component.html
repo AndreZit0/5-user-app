@@ -9,7 +9,7 @@
         <table class="table table-hover table-striped">
           <thead>
             <tr>
-              <!-- <th>id</th> -->
+              <th>id</th>
               <th>name</th>
               <th>lastname</th>
               <th>email</th>
@@ -21,7 +21,7 @@
           <tbody>
             @for (user of users; track $index) {
             <tr>
-              <!-- <td>{{user.id}}</td> -->
+              <td>{{user.id}}</td>
               <td>{{user.name}}</td>
               <td>{{user.lastname}}</td>
               <td>{{user.email}}</td>
@@ -36,7 +36,6 @@
               <td>
                 <button class="btn btn-success" 
                 [routerLink]="['/users/edit', user.id]">
-                  
                   update
                 </button>
               </td>
@@ -45,3 +44,6 @@
           </tbody>
         </table>
         }
+<paginator [paginator] ="paginator" [url]="'/users/page'" />
+
+
